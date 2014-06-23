@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+import os
+import sys
+
+mount_point = lambda c, p: "/mnt/vps2/%s/%s" % (c, p)
+src_path = lambda c, p: "/usr/local/chroots/%s/usr/local/src/%s" % (c, p)
+chroot_src_path = lambda p: "/usr/local/src/%s" % p
+
+class Commands(object):
+    def __init__(self, chroot):
+        self.chroot = chroot
+
+    def mount_fs(self, project):
+        m = mount_point(self.chroot, project)
+        r = src_path(self.chroot, project)
+        if not os.path.exists(m):
+            os.mkdir(m)
+        if os.path.ismount(m):
+            print "*** unmounting %s from %s" % (r, m)
+            os.system("sudo umount %s" % m)
+            return False
+        else:
+            print "*** mounting %s on %s" % (r, m)
+            os.system("sshfs dave-sullivan.com:%s %s" % (r, m))
+            return True
+
+    def ssh(self, project):
+        os.system("ssh dave-sullivan.com -t schroot -c %s -d %s" % (self.chroot, chroot_src_path(project)))
+
+
+CHROOTS = {
+    'djangodev': Commands('djangodev'),
+    'rubydev': Commands('rubydev')
+}
+
+PROJECTS = {
+    'doctalk': {'chroot': 'djangodev'},
+    'doctalk_dev': {'chroot': 'djangodev'},
+    'krae': {'chroot': 'rubydev'}
+}
+
+if PROJECTS.has_key(sys.argv[1]):
+    cmd = CHROOTS[PROJECTS[sys.argv[1]]['chroot']]
+    if cmd.mount_fs(sys.argv[1]):
+        cmd.ssh(sys.argv[1])
+        cmd.mount_fs(sys.argv[1])
