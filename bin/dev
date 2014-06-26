@@ -15,18 +15,18 @@ class Commands(object):
         m = mount_point(self.chroot, project)
         r = src_path(self.chroot, project)
         if not os.path.exists(m):
-            os.mkdir(m)
+            os.makedirs(m)
         if os.path.ismount(m):
             print "*** unmounting %s from %s" % (r, m)
-            os.system("sudo umount %s" % m)
+            os.system("fusermount -u %s" % m)
             return False
         else:
             print "*** mounting %s on %s" % (r, m)
-            os.system("sshfs dave-sullivan.com:%s %s" % (r, m))
+            os.system("sshfs dave-sullivan.com:%s %s -p 3478" % (r, m))
             return True
 
     def ssh(self, project):
-        os.system("ssh dave-sullivan.com -t schroot -c %s -d %s" % (self.chroot, chroot_src_path(project)))
+        os.system("ssh dave-sullivan.com -t -p 3478 schroot -c %s -d %s" % (self.chroot, chroot_src_path(project)))
 
 with open(os.path.expanduser("~/.devrc")) as f:
     config_json = json.load(f)
