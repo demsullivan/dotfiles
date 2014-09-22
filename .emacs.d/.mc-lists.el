@@ -4,6 +4,7 @@
 (setq mc/cmds-to-run-for-all
       '(
 	exit-recursive-edit
+	indent-for-tab-command
 	keyboard-escape-quit
 	))
 
