@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+
+########## NODE.JS ##########
+
+echo "[node] Installing node.js..."
+curl -sL https://deb.nodesource.com/setup | sudo bash -
+sudo apt-get install -y nodejs
+
+echo "[node] Installing common node.js packages..."
+npm install -g bower broccoli-cli
+
+########## RUBY ##########
+
+echo "[ruby] Installing ruby-install..."
+wget -O ruby-install-0.5.0.tar.gz https://github.com/postmodern/ruby-install/archive/v0.5.0.tar.gz
+tar -xzvf ruby-install-0.5.0.tar.gz
+cd ruby-install-0.5.0/
+make install
+
+echo "[ruby] Installing chruby..."
+wget -O chruby-0.3.9.tar.gz https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz
+tar -xzvf chruby-0.3.9.tar.gz
+cd chruby-0.3.9/
+make install
+
+echo "[ruby] Installing latest ruby..."
+ruby-install ruby 2.0.0
+
+echo "source /usr/local/share/chruby/chruby.sh" >> ~/.bashrc
+echo "source /usr/local/share/chruby/auto.sh" >> ~/.bashrc
+echo "ruby-2.0.0" > ~/.ruby-version
+
+echo "[ruby] Installing common ruby gems..."
+chruby ruby 2.0.0
+gem install bundler
+
+########## PYTHON ##########
+
+echo "[python] Installing common python packages..."
+apt-get install -y python-virtualenv virtualenvwrapper
+
+
+########## POSTGRES ##########
+
+echo [postgres] Installing postgres..."
+apt-get install -y postgresql libpq-dev
+
+########## VAGRANT ##########
+echo "[vagrant] Installing virtualbox..."
+apt-get install -y virtualbox
+
+echo "[vagrant] Installing vagrant..."
+wget -O vagrant_1.7.2_x86_64.deb https://dl.bintray.com/mitchellh/vagrant/vagrant_1.7.2_x86_64.deb
+dpkg -i vagrant_1.7.2_x86_64.deb
